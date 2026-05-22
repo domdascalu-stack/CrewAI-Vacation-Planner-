@@ -1,69 +1,108 @@
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai_tools import SerperDevTool
+from bedrock_agentcore.runtime import BedrockAgentCoreApp
 import os
 
-# Initialize SerperDev Tool
-Serper_dev_tool=SerperDevTool(api_key=os.environ.get('SERPER_API_Key'))
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+# ---------------------------------------------------
+# Initialize Bedrock AgentCore App
+# ---------------------------------------------------
+app = BedrockAgentCoreApp()
 
+# ---------------------------------------------------
+# Initialize Bedrock LLM
+# ---------------------------------------------------
+bedrock_llm = LLM(
+    model="bedrock/us.amazon.nova-pro-v1:0",
+    region_name="us-west-2"
+)
+
+# ---------------------------------------------------
+# Initialize Serper Tool
+# ---------------------------------------------------
+serper_dev_tool = SerperDevTool(
+    api_key=os.environ.get("SERPER_API_Key")
+)
+
+# ---------------------------------------------------
+# Crew Definition
+# ---------------------------------------------------
 @CrewBase
-class VacationPlanner():
-    """VacationPlanner crew"""
+class VacationPlanner:
+    """Vacation Planner Crew"""
 
     agents: list[BaseAgent]
     tasks: list[Task]
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
-    
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
+    # ---------------------------------------------------
+    # Agents
+    # ---------------------------------------------------
     @agent
     def vacation_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config['vacation_researcher'], # type: ignore[index]
+            config=self.agents_config["vacation_researcher"],
             verbose=True,
-            tools=[Serper_dev_tool],
+            llm=bedrock_llm,
+            tools=[serper_dev_tool],
         )
 
     @agent
     def itinerary_planner(self) -> Agent:
         return Agent(
-            config=self.agents_config['itinerary_planner'], # type: ignore[index]
-            verbose=True
+            config=self.agents_config["itinerary_planner"],
+            verbose=True,
+            llm=bedrock_llm,
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
+    # ---------------------------------------------------
+    # Tasks
+    # ---------------------------------------------------
     @task
     def research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config["research_task"],
         )
 
     @task
     def reporting_task(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config["reporting_task"],
+            output_file="report.md",
         )
 
+    # ---------------------------------------------------
+    # Crew
+    # ---------------------------------------------------
     @crew
     def crew(self) -> Crew:
-        """Creates the VacationPlanner crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
+        """Creates the Vacation Planner Crew"""
 
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            llm=bedrock_llm,
         )
+
+# ---------------------------------------------------
+# AgentCore Runtime Entrypoint
+# ---------------------------------------------------
+@app.entrypoint
+def invoke(payload: dict) -> dict:
+    topic = payload.get("topic", "")
+
+    result = VacationPlanner().crew().kickoff(
+        inputs={"topic": topic}
+    )
+
+    return {
+        "result": result.raw
+    }
+
+# ---------------------------------------------------
+# Run Application
+# ---------------------------------------------------
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)

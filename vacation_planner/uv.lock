@@ -295,6 +295,25 @@ wheels = [
 ]
 
 [[package]]
+name = "bedrock-agentcore"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "boto3" },
+    { name = "botocore" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "urllib3" },
+    { name = "uvicorn" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c6/87/6cf94e5a9c34a36f50a61985af6758a012d9ace4383aeaa73a3756ab6152/bedrock_agentcore-1.10.0.tar.gz", hash = "sha256:1415ceee3057c44bb63bedb8ca7b938ee24af82aefe1dcef602de9560d6d1b40", size = 695101, upload-time = "2026-05-19T19:56:23.77Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/33/af/24c04aeaa308a25f0018371c4d2357b8514748d08a202a53eace09ea33d4/bedrock_agentcore-1.10.0-py3-none-any.whl", hash = "sha256:780cc62fa84ba17146a11578f91de3c98357df159254c24830b56056afdc7271", size = 263840, upload-time = "2026-05-19T19:56:21.762Z" },
+]
+
+[[package]]
 name = "blinker"
 version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3734,6 +3753,7 @@ name = "vacation-planner"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "bedrock-agentcore" },
     { name = "boto3" },
     { name = "crewai", extra = ["tools"] },
     { name = "streamlit" },
@@ -3741,6 +3761,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bedrock-agentcore", specifier = ">=1.10.0" },
     { name = "boto3", specifier = ">=1.43.10" },
     { name = "crewai", extras = ["tools"], specifier = "==1.14.5a2" },
     { name = "streamlit", specifier = ">=1.57.0" },
