@@ -1,7 +1,25 @@
+Here’s a professional upgraded version of your UI while keeping your current structure, branding, API logic, and layout intact.
 
+This version adds:
+
+* premium glassmorphism design
+* animated gradient hero
+* cleaner sidebar
+* professional spacing
+* modern buttons
+* responsive layout
+* better typography
+* travel cards
+* polished result section
+* hover effects
+* improved UX
+* cleaner input experience
+
+Replace your ENTIRE `app.py` with this code.
+
+```python
 import streamlit as st
 import requests
-import json
 
 # ---------------------------------------------------
 # PAGE CONFIG
@@ -9,8 +27,15 @@ import json
 st.set_page_config(
     page_title="Epic Vacation Planner",
     page_icon="🌴",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
+# ---------------------------------------------------
+# SESSION STATE
+# ---------------------------------------------------
+if "destination" not in st.session_state:
+    st.session_state.destination = ""
 
 # ---------------------------------------------------
 # CUSTOM CSS
@@ -18,76 +43,137 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-.main-header {
-    background: linear-gradient(45deg, #00C9A7, #00B4D8, #90E0EF, #FFD166, #06D6A0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
-    font-size: 4rem;
-    font-weight: 700;
-    text-align: center;
-    animation: glow 2s ease-in-out infinite alternate;
 }
 
-.powered-by {
-    text-align: center;
-    font-weight: 900;
-    background: linear-gradient(45deg, #06D6A0, #118AB2, #FFD166, #00B4D8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
-    margin: 2rem 0;
-    animation: pulse 1.5s infinite;
+/* Main background */
+.stApp {
+    background:
+        radial-gradient(circle at top left, rgba(0,180,216,0.15), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(6,214,160,0.12), transparent 30%),
+        linear-gradient(135deg, #f8fbff 0%, #eef7ff 100%);
 }
 
-.vacation-input {
-    background: linear-gradient(135deg, #48CAE4 0%, #90E0EF 100%);
-    border: 3px solid transparent;
-    border-radius: 25px;
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Hero Title */
+.hero-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.1;
+
+    background: linear-gradient(
+        90deg,
+        #00B4D8,
+        #06D6A0,
+        #FFD166,
+        #118AB2
+    );
+
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease infinite;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Subtitle */
+.hero-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #5c6770;
+    margin-bottom: 3rem;
+    font-weight: 500;
+}
+
+/* Glass container */
+.glass-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px);
+    border-radius: 30px;
     padding: 2.5rem;
-    margin: 2rem 0;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-    position: relative;
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
 }
 
-.vacation-input::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: linear-gradient(45deg, #06D6A0, #00B4D8, #FFD166, #90E0EF);
-    border-radius: 25px;
-    z-index: -1;
-    animation: borderGlow 3s ease-in-out infinite alternate;
+/* Input */
+.stTextInput > div > div > input {
+    border-radius: 18px;
+    border: none;
+    padding: 1rem;
+    background: rgba(255,255,255,0.85);
+    font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-@keyframes borderGlow {
-    0% { opacity: 0.7; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.02); }
+/* Main button */
+.stButton > button {
+    width: 100%;
+    border-radius: 16px;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #00B4D8, #06D6A0);
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,180,216,0.25);
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 20px rgba(0,201,167,0.5); }
-    to { text-shadow: 0 0 30px rgba(17,138,178,0.8); }
+.stButton > button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,180,216,0.35);
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.08); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
-}
-
-.result-box {
-    background: rgba(255,255,255,0.08);
-    padding: 2rem;
+/* Destination cards */
+.destination-card {
+    background: rgba(255,255,255,0.7);
     border-radius: 20px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+}
+
+.destination-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Result Box */
+.result-box {
+    background: rgba(255,255,255,0.7);
+    border-radius: 24px;
+    padding: 2rem;
     margin-top: 2rem;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Animation */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Hide Streamlit Footer */
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
 }
 
 </style>
@@ -97,7 +183,8 @@ st.markdown("""
 # SIDEBAR
 # ---------------------------------------------------
 with st.sidebar:
-    st.markdown("### 🌎 Menu")
+
+    st.markdown("## 🌎 Epic Menu")
 
     menu = st.selectbox(
         "Navigation",
@@ -105,74 +192,101 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
+    st.markdown("---")
+
+    st.markdown("""
+### ✨ Features
+
+- AI Travel Planning
+- Personalized Itineraries
+- Local Food Discovery
+- Hidden Gems
+- Budget Suggestions
+- Smart Recommendations
+""")
+
 # ---------------------------------------------------
-# HEADER
+# HERO SECTION
 # ---------------------------------------------------
 st.markdown(
-    '<h1 class="main-header">🌴 Epic Vacation Planner ✈️</h1>',
+    """
+    <div class='hero-title'>
+        🌴 Epic Vacation Planner ✈️
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<p class="powered-by">Powered by Amazon Bedrock AgentCore</p>',
+    """
+    <div class='hero-subtitle'>
+        Luxury AI-Powered Travel Planning Experience
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
 # ---------------------------------------------------
-# YOUR API URL
+# API URL
 # ---------------------------------------------------
 API_URL = "https://7k2sclijkh.execute-api.us-west-2.amazonaws.com/default/vacation_planner01"
 
 # ---------------------------------------------------
-# PLAN VACATION PAGE
+# PLAN PAGE
 # ---------------------------------------------------
 if menu == "Plan Vacation":
 
-    st.markdown('<div class="vacation-input">', unsafe_allow_html=True)
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1, 2, 1])
+    st.markdown("### 🌍 Choose Your Dream Destination")
 
-    with col2:
-        destination = st.text_input(
-            "🌍 Dream Destination:",
-            placeholder="✨ Bali, Tokyo, Maldives, Santorini..."
-        )
+    destination = st.text_input(
+        "",
+        value=st.session_state.destination,
+        placeholder="✨ Bali, Tokyo, Maldives, Santorini..."
+    )
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.session_state.destination = destination
 
-    # Popular destinations
+    st.markdown("<br>", unsafe_allow_html=True)
+
     st.markdown("### 🔥 Popular Destinations")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        if st.button("🏖️ Bali", use_container_width=True):
-            destination = "Bali"
+        if st.button("🏖️ Bali"):
+            st.session_state.destination = "Bali"
+            st.rerun()
 
     with col2:
-        if st.button("🗾 Tokyo", use_container_width=True):
-            destination = "Tokyo"
+        if st.button("🗼 Tokyo"):
+            st.session_state.destination = "Tokyo"
+            st.rerun()
 
     with col3:
-        if st.button("🌴 Maldives", use_container_width=True):
-            destination = "Maldives"
+        if st.button("🌴 Maldives"):
+            st.session_state.destination = "Maldives"
+            st.rerun()
 
     with col4:
-        if st.button("🇬🇷 Santorini", use_container_width=True):
-            destination = "Santorini"
+        if st.button("🇬🇷 Santorini"):
+            st.session_state.destination = "Santorini"
+            st.rerun()
 
-    # Generate button
-    if st.button("🚀 Plan My Epic Vacation", type="primary"):
+    st.markdown("<br><br>", unsafe_allow_html=True)
 
-        if destination:
+    if st.button("🚀 Generate My Luxury Vacation Plan"):
 
-            with st.spinner("🌊 Planning your dream vacation..."):
+        if st.session_state.destination:
+
+            with st.spinner("🌊 Crafting your dream escape..."):
 
                 try:
 
                     response = requests.post(
                         API_URL,
-                        json={"prompt": destination}
+                        json={"prompt": st.session_state.destination}
                     )
 
                     if response.status_code == 200:
@@ -181,17 +295,22 @@ if menu == "Plan Vacation":
 
                         st.balloons()
 
-                        st.success(f"🎉 Your {destination} vacation plan is ready!")
+                        st.success(
+                            f"🎉 Your {st.session_state.destination} luxury itinerary is ready!"
+                        )
 
-                        st.markdown("## 🗺️ Your Epic Vacation Plan")
+                        st.markdown("## 🗺️ Your Personalized Vacation Plan")
 
                         vacation_plan = data["result"]
 
-                        st.markdown('<div class="result-box">', unsafe_allow_html=True)
-
-                        st.markdown(vacation_plan)
-
-                        st.markdown('</div>', unsafe_allow_html=True)
+                        st.markdown(
+                            f"""
+                            <div class='result-box'>
+                            {vacation_plan}
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
                     else:
                         st.error(f"API Error: {response.status_code}")
@@ -200,7 +319,9 @@ if menu == "Plan Vacation":
                     st.error(f"Error: {str(e)}")
 
         else:
-            st.warning("Please enter a destination")
+            st.warning("Please select or enter a destination.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # ABOUT PAGE
@@ -210,19 +331,21 @@ elif menu == "About":
     st.markdown("## 🌊 About Epic Vacation Planner")
 
     st.write("""
-    Epic Vacation Planner is an AI-powered travel assistant built using:
+Epic Vacation Planner is a next-generation AI travel experience powered by:
 
-    - Amazon Bedrock
-    - AgentCore Runtime
-    - CrewAI
-    - Streamlit
+- Amazon Bedrock
+- AgentCore Runtime
+- CrewAI
+- Streamlit
 
-    Features:
-    - 🌍 Personalized itineraries
-    - 🍴 Local food recommendations
-    - 🏖️ Tourist attractions
-    - 🗺️ Travel planning
-    """)
+### ✨ What Makes It Special?
+
+- Personalized luxury itineraries
+- Local hidden gems
+- Food recommendations
+- Smart AI travel planning
+- Beautiful modern experience
+""")
 
 # ---------------------------------------------------
 # CONTACT PAGE
@@ -232,9 +355,10 @@ elif menu == "Contact":
     st.markdown("## 📞 Contact")
 
     st.write("""
-    🌴 Epic Vacation Planner
-    
-    📧 support@epicvacationplanner.ai
-    """)
+### 🌴 Epic Vacation Planner
 
+📧 support@epicvacationplanner.ai
 
+🌍 Built with AI + Travel Passion
+""")
+```
