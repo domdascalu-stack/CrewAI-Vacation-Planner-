@@ -1,23 +1,4 @@
-Here’s a professional upgraded version of your UI while keeping your current structure, branding, API logic, and layout intact.
 
-This version adds:
-
-* premium glassmorphism design
-* animated gradient hero
-* cleaner sidebar
-* professional spacing
-* modern buttons
-* responsive layout
-* better typography
-* travel cards
-* polished result section
-* hover effects
-* improved UX
-* cleaner input experience
-
-Replace your ENTIRE `app.py` with this code.
-
-```python
 import streamlit as st
 import requests
 
