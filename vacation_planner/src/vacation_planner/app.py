@@ -342,4 +342,3 @@ elif menu == "Contact":
 
 🌍 Built with AI + Travel Passion
 """)
-```
